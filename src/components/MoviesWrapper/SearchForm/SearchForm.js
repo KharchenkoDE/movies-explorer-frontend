@@ -1,34 +1,48 @@
 import React, { useState } from 'react';
 import './SearchForm.css';
 
-function SearchForm() {
+function SearchForm({
+  searchValue, 
+  handleChangeSearchValue, 
+  isShortMovie, 
+  onSearchFormsubmit, 
+  handleChangeIsShort
+}) {
 
-  const [searchInputValue, setSearchInputValue] = useState('');
+  const [error, setError] = useState('');
 
-  const [isShortMovie, setIsShortMovie] = useState(false)
+  const onSubmit = (event) => {
+    event.preventDefault();
+    if(!searchValue) {
+      setError('Поле поиска обязательно для заполнения');
+      return
+    }
+    onSearchFormsubmit();
+  };
 
   return (
     <section>
-      <form noValidate className="search-form">
+      <form className="search-form" onSubmit={onSubmit}>
         <div className="search-form__container">
           <input
             className="search-form__input"
             type="text"
             name="search"
             placeholder="Фильм"
-            required
-            value={searchInputValue}
-            onChange={(evt) => setSearchInputValue(evt.target.value)} />
+            value={searchValue}
+            onFocus={() => setError('')}
+            onChange={(evt) => handleChangeSearchValue(evt.target.value)} />
           <button
             className="search-form__btn"
             type='submit' />
         </div>
+        {error && <div style={{color: 'red'}}>{error}</div>}
         <div className="search-form__toggle-container">
           <label className="search-form__toggle">
             <input
               className="search-form__checkbox-input"
               type="checkbox"
-              checked={isShortMovie} onChange={() => setIsShortMovie(prevState => !prevState)} />
+              checked={isShortMovie} onChange={(evt) => handleChangeIsShort(evt.target.checked)} />
             <span className="search-form__checkbox-inner"></span>
           </label>
           <p className='search-form__checkbox-text'>

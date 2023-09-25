@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './Register.css';
 import logo from '../../images/logo.svg';
 import { Link } from 'react-router-dom';
 import Input from '../Input/Input';
+import { validator } from '../../utils/validation';
 
-function Register() {
+function Register({ onRegister, signError, setSignError }) {
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,22 +22,26 @@ function Register() {
   function handleChange(evt) {
     const { name, value } = evt.target;
     setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
+      ...prevFormData,
+      [name]: value,
+    }));
+    setFormDataErrors((prevFormData) => ({
+      ...prevFormData,
+      [name]: value ? validator({ type: name, value }) : 'Поле обязательно для заполнения',
     }));
   };
 
   function handleSubmit(evt) {
     evt.preventDefault();
-    // отправка данных на сервер
-    setFormDataErrors({
-      name: formData.name ? '' : 'Заполните поле',
-      email: formData.email ? '' : 'Заполните поле',
-      password: formData.password ? '' : 'Заполните поле',
-    });
-    if(!formData.name || !formData.email || !formData.password) {
+    setFormDataErrors((prevFormData) => ({
+      name: formData.name ? validator({ type: 'name', value: formData.name }) : 'Поле обязательно для заполнения',
+      email: formData.email ? validator({ type: 'email', value: formData.email }) : 'Поле обязательно для заполнения',
+      password: formData.password ? '' : 'Поле обязательно для заполнения',
+    }));
+    if (!formData.name || !formData.email || !formData.password) {
       return
     }
+    onRegister(formData)
   };
 
   return (
@@ -60,6 +65,7 @@ function Register() {
                 name='name'
                 value={formData.name}
                 onChange={handleChange}
+                onFocus={() => setSignError('')}
                 errorText={formDataErrors.name}
               />
               <Input
@@ -69,6 +75,7 @@ function Register() {
                 name='email'
                 value={formData.email}
                 onChange={handleChange}
+                onFocus={() => setSignError('')}
                 errorText={formDataErrors.email}
               />
               <Input
@@ -78,9 +85,11 @@ function Register() {
                 type='password'
                 value={formData.password}
                 onChange={handleChange}
+                onFocus={() => setSignError('')}
                 errorText={formDataErrors.password}
               />
             </div>
+            {signError && <p className='register__error'>{signError}</p>}
             <button
               className='register__btn'
               type='submit'>

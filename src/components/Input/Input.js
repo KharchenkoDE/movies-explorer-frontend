@@ -7,12 +7,17 @@ function Input({
     type = 'text',
     value,
     onChange,
+    onFocus,
     placeholder,
     errorText
 }) {
 
     const handleChange = (event) => {
         onChange(event);
+    }
+
+    const handleFocus = () => {
+        onFocus();
     }
 
   return (
@@ -24,11 +29,9 @@ function Input({
             type={type}
             value={value}
             onChange={evt => handleChange(evt)}
+            onFocus={() => handleFocus()}
             placeholder={placeholder}
-            minLength='6'
-            maxLength='40'
-            autoComplete="off"
-            required 
+            autoComplete="off" 
         />
         {errorText && 
             <span className="input__error">{errorText}</span>

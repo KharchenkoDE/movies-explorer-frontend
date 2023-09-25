@@ -1,0 +1,21 @@
+.movies__wrapper {
+  color: #fff;
+  margin: 0 auto;
+  padding: 0 70px;
+  max-width: 1280px;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+@media screen and (max-width: 767px) {
+  .movies__wrapper {
+    padding: 0 30px;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .movies__wrapper {
+    padding: 0 10px;
+  }
+}

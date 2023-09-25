@@ -1,6 +1,6 @@
 .profile {
   max-width: 410px;
-  margin: 70px auto ;
+  margin: 70px auto;
 }
 
 .profile__container {
@@ -19,22 +19,20 @@
   padding-top: 123px;
 }
 
-.profile__label-name {
+.profile__label {
   font-weight: 400;
   font-size: 11px;
   display: flex;
   justify-content: space-between;
-  height: 32px;
+  min-height: 32px;
+}
+
+.profile__label-name {
   align-items: flex-start;
   border-bottom: solid 1px #424242;
 }
 
 .profile__label-email {
-  font-weight: 400;
-  font-size: 11px;
-  display: flex;
-  justify-content: space-between;
-  height: 32px;
   align-items: flex-end;
 }
 
@@ -45,7 +43,19 @@
   padding: 0;
   color: #fff;
   background-color: transparent;
+  outline: none;
+  transition: all 200ms linear;
 }
+
+.profile__error {
+  margin: 10px 0 10px;
+  padding: 0;
+  font-weight: 400;
+  font-size: 11px;
+  color: #EE3465;
+  text-align: right;
+}
+
 
 .profile__action {
   padding-top: 220px;
@@ -66,6 +76,10 @@
 }
 
 .profile__btn-edit:hover {
+  opacity: 0.8;
+}
+
+.profile__btn-edit:disabled {
   opacity: 0.8;
 }
 

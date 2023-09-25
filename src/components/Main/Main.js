@@ -8,11 +8,11 @@ import Portfolio from './Portfolio/Portfolio';
 import Footer from '../Footer/Footer';
 import './Main.css';
 
-function Main() {
+function Main({isLoggedIn}) {
 
   return (
     <>
-      <Header />
+      <Header isLoggedIn={isLoggedIn}/>
       <main className='main'>
         <Promo />
         <AboutProject />

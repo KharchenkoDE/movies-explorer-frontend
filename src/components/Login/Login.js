@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './Login.css';
 import logo from '../../images/logo.svg';
 import { Link } from 'react-router-dom';
 import Input from '../Input/Input';
+import { validator } from '../../utils/validation';
 
-function Login() {
+function Login({onLogin, signError, setSignError}) {
 
   const [formData, setFormData] = useState({
     email: '',
@@ -19,21 +20,26 @@ function Login() {
   function handleChange(evt) {
     const { name, value } = evt.target;
     setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: value,
+      ...prevFormData,
+      [name]: value,
+    }));
+
+    setFormDataErrors((prevFormData) => ({
+      ...prevFormData,
+      [name]: value ? validator({ type: name, value }) : 'Поле обязательно для заполнения',
     }));
   };
+
   function handleSubmit(evt) {
     evt.preventDefault();
-    // отправка данных на сервер
     setFormDataErrors({
-      email: formData.email ? '' : 'Заполните поле',
-      password: formData.password ? '' : 'Заполните поле',
+      email: formData.email ? '' : 'Поле обязательно для заполнения',
+      password: formData.password ? '' : 'Поле обязательно для заполнения',
     });
-    if( !formData.email || !formData.password) {
+    if (!formData.email || !formData.password) {
       return
     }
-    console.log(formData)
+    onLogin({email: formData.email, password: formData.password});
   };
 
   return (
@@ -50,7 +56,7 @@ function Login() {
             Рады видеть!
           </h1>
           <form className='login__form' onSubmit={handleSubmit}>
-          <div className='login__inputs'>
+            <div className='login__inputs'>
               <Input
                 nameText='E-mail'
                 placeholder='E-mail'
@@ -58,6 +64,7 @@ function Login() {
                 name='email'
                 value={formData.email}
                 onChange={handleChange}
+                onFocus={() => setSignError('')}
                 errorText={formDataErrors.email}
               />
               <Input
@@ -65,11 +72,13 @@ function Login() {
                 placeholder='Пароль'
                 name='password'
                 type='password'
+                onFocus={() => setSignError('')}
                 value={formData.password}
                 onChange={handleChange}
                 errorText={formDataErrors.password}
               />
             </div>
+            {signError && <p className='login__error'>{signError}</p>}
             <button
               className='login__btn'
               type='submit'>
