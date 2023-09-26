@@ -14,6 +14,7 @@ const Footer = () => {
         <ul className="footer__links">
           <li>
             <a
+              rel="noreferrer"
               className="footer__link"
               href="https://practicum.yandex.ru/"
               target='_blank'>
@@ -22,6 +23,7 @@ const Footer = () => {
           </li>
           <li>
             <a
+              rel="noreferrer"
               className="footer__link"
               href="https://github.com/KharchenkoDE"
               target='_blank'>

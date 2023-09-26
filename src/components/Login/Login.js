@@ -4,6 +4,7 @@ import logo from '../../images/logo.svg';
 import { Link } from 'react-router-dom';
 import Input from '../Input/Input';
 import { validator } from '../../utils/validation';
+import { EMPTY_INPUT_ERROR } from '../../config';
 
 function Login({onLogin, signError, setSignError}) {
 
@@ -26,15 +27,15 @@ function Login({onLogin, signError, setSignError}) {
 
     setFormDataErrors((prevFormData) => ({
       ...prevFormData,
-      [name]: value ? validator({ type: name, value }) : 'Поле обязательно для заполнения',
+      [name]: value ? validator({ type: name, value }) : EMPTY_INPUT_ERROR,
     }));
   };
 
   function handleSubmit(evt) {
     evt.preventDefault();
     setFormDataErrors({
-      email: formData.email ? '' : 'Поле обязательно для заполнения',
-      password: formData.password ? '' : 'Поле обязательно для заполнения',
+      email: formData.email ? '' : EMPTY_INPUT_ERROR,
+      password: formData.password ? '' : EMPTY_INPUT_ERROR,
     });
     if (!formData.email || !formData.password) {
       return
@@ -80,6 +81,7 @@ function Login({onLogin, signError, setSignError}) {
             </div>
             {signError && <p className='login__error'>{signError}</p>}
             <button
+              disabled={formDataErrors.email || formDataErrors.password || !formData.email || !formData.password}
               className='login__btn'
               type='submit'>
               Войти

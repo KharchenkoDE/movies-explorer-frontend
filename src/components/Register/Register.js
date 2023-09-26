@@ -4,6 +4,7 @@ import logo from '../../images/logo.svg';
 import { Link } from 'react-router-dom';
 import Input from '../Input/Input';
 import { validator } from '../../utils/validation';
+import { EMPTY_INPUT_ERROR } from '../../config';
 
 function Register({ onRegister, signError, setSignError }) {
 
@@ -27,16 +28,16 @@ function Register({ onRegister, signError, setSignError }) {
     }));
     setFormDataErrors((prevFormData) => ({
       ...prevFormData,
-      [name]: value ? validator({ type: name, value }) : 'Поле обязательно для заполнения',
+      [name]: value ? validator({ type: name, value }) : EMPTY_INPUT_ERROR,
     }));
   };
 
   function handleSubmit(evt) {
     evt.preventDefault();
     setFormDataErrors((prevFormData) => ({
-      name: formData.name ? validator({ type: 'name', value: formData.name }) : 'Поле обязательно для заполнения',
-      email: formData.email ? validator({ type: 'email', value: formData.email }) : 'Поле обязательно для заполнения',
-      password: formData.password ? '' : 'Поле обязательно для заполнения',
+      name: formData.name ? validator({ type: 'name', value: formData.name }) : EMPTY_INPUT_ERROR,
+      email: formData.email ? validator({ type: 'email', value: formData.email }) : EMPTY_INPUT_ERROR,
+      password: formData.password ? '' : EMPTY_INPUT_ERROR,
     }));
     if (!formData.name || !formData.email || !formData.password) {
       return
@@ -91,6 +92,13 @@ function Register({ onRegister, signError, setSignError }) {
             </div>
             {signError && <p className='register__error'>{signError}</p>}
             <button
+              disabled={
+                formDataErrors.name || 
+                formDataErrors.email || 
+                formDataErrors.password || 
+                !formData.name || 
+                !formData.email || 
+                !formData.password}
               className='register__btn'
               type='submit'>
               Зарегистрироваться

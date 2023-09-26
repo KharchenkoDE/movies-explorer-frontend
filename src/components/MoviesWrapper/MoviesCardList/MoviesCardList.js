@@ -2,34 +2,23 @@ import React, { useState, useEffect } from 'react';
 import './MoviesCardList.css';
 import MoviesCard from '../MoviesCard/MoviesCard';
 import ButtonLoadMore from '../ButtonLoadMore/ButtonLoadMore'
-
-const countersFromSize = {
-  'desktop': 12,
-  'tablet': 8,
-  'mobile': 5,
-};
-
-const stepFromSize = {
-  'desktop': 3,
-  'tablet': 2,
-  'mobile': 2,
-};
+import {COUNTERS_FROM_SIZE, STEP_FROM_SIZE} from '../../../config';
 
 function MoviesCardList({ isMyMoviesPage, movies, isShort, handleAddMovie, handleDeleteMovie }) {
 
   const [currentSize, setCurrentSize] = useState('desktop');
 
-  const [stepLoadMore, setStepLoadMore] = useState(stepFromSize.desktop);
+  const [stepLoadMore, setStepLoadMore] = useState(STEP_FROM_SIZE.desktop);
 
-  const [visibleCardsLength, setVisibleCardsLength] = useState(countersFromSize.desktop)
+  const [visibleCardsLength, setVisibleCardsLength] = useState(COUNTERS_FROM_SIZE.desktop)
 
   const [isAllCardsLoaded, setIsAllCardsLoaded] = useState(false);
 
   useEffect(() => {
 
     const setParamsFromSize = (size) => {
-      setStepLoadMore(stepFromSize[size]);
-      setVisibleCardsLength(countersFromSize[size]);
+      setStepLoadMore(STEP_FROM_SIZE[size]);
+      setVisibleCardsLength(COUNTERS_FROM_SIZE[size]);
     };
 
     const handleResize = () => {
@@ -61,8 +50,8 @@ function MoviesCardList({ isMyMoviesPage, movies, isShort, handleAddMovie, handl
   }
 
   const clearParams = () => {
-    setVisibleCardsLength(countersFromSize.desktop);
-    setIsAllCardsLoaded(getFilteredByDurationList().length <= countersFromSize[currentSize]);
+    setVisibleCardsLength(COUNTERS_FROM_SIZE.desktop);
+    setIsAllCardsLoaded(getFilteredByDurationList().length <= COUNTERS_FROM_SIZE[currentSize]);
   }
 
   useEffect(() => {
@@ -82,7 +71,7 @@ function MoviesCardList({ isMyMoviesPage, movies, isShort, handleAddMovie, handl
   };
 
   useEffect(() => {
-    if(getFilteredByDurationList().length <= countersFromSize[currentSize]) {
+    if(getFilteredByDurationList().length <= COUNTERS_FROM_SIZE[currentSize]) {
       setIsAllCardsLoaded(true);
     } else {
       setIsAllCardsLoaded( visibleCardsLength >= movies.length)
@@ -95,13 +84,14 @@ function MoviesCardList({ isMyMoviesPage, movies, isShort, handleAddMovie, handl
         <>
           <div className='galery__items'>
             {
+              getFilteredByDurationList().length ?
               getFilteredByDurationList()
               .slice(0, visibleCardsLength)
               .map(movie => (
                 <MoviesCard
                   isMyMoviesPage={isMyMoviesPage}
                   movie={movie}
-                  key={movie.nameEN}
+                  key={movie.id}
                   handleClickSave={(movie) => {
                     handleAddMovie(
                       {
@@ -123,7 +113,7 @@ function MoviesCardList({ isMyMoviesPage, movies, isShort, handleAddMovie, handl
                     handleDeleteMovie(movieId)
                   }}
                 />
-              ))}
+              )) : <p>Ничего не найдено</p>}
           </div>
           {
             !isMyMoviesPage && !isAllCardsLoaded &&

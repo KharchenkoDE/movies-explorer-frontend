@@ -1,8 +1,9 @@
 import React from "react";
 import "./Page404.css";
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Page404() {
+  const navigate = useNavigate();
   return (
     <main className="page-error">
       <div className="page-error__text">
@@ -13,9 +14,9 @@ function Page404() {
           Страница не найдена
         </p>
       </div>
-      <Link to="/" className="page-error__btn">
+      <button onClick={() => navigate(-1)} className="page-error__btn">
         Назад
-      </Link>
+      </button>
     </main>
   );
 }

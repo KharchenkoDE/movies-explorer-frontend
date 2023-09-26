@@ -53,6 +53,11 @@
   opacity: 0.8;
 }
 
+.register__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .register__link {
   text-decoration: none;
 }

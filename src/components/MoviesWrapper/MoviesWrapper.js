@@ -24,13 +24,11 @@ function MoviesWrapper({ isMyMoviesPage }) {
 
     const [isLoadingError, setIsLoadingError] = useState(false);
 
-    const getMyMovies = () => {
-        if (isMyMoviesPage) {
-            setIsLoading(true);
-        }
+    const getMyMoviesFromApi = () => {
         mainApi.getMyMovies()
             .then(response => {
                 setMyMovies(response);
+                window.localStorage.setItem('myMovies', JSON.stringify(response));
                 if (isMyMoviesPage) {
                     handleMoviesFilter(response);
                 }
@@ -39,6 +37,27 @@ function MoviesWrapper({ isMyMoviesPage }) {
                 setIsLoadingError(loadingErrorText)
                 setIsLoading(false);
             })
+    }
+
+    const getMyMovies = () => {
+        if (isMyMoviesPage) {
+            setIsLoading(true);
+        }
+        if (localStorage.getItem('myMovies') === null) {
+            getMyMoviesFromApi();
+        } else {
+            try {
+                const parsedMyMovies = JSON.parse(localStorage.getItem('myMovies'));
+                if(Array.isArray(parsedMyMovies)) {
+                    setMyMovies(parsedMyMovies);
+                    if (isMyMoviesPage) {
+                        handleMoviesFilter(parsedMyMovies);
+                    }
+                }
+            } catch {
+                getMyMoviesFromApi();
+            }
+        } 
     };
 
     const compareAllMoviesWithMyMovies = (moviesAll, moviesMy) => {
@@ -74,7 +93,7 @@ function MoviesWrapper({ isMyMoviesPage }) {
         mainApi.addNewMovie(movie)
             .then(response => {
                 const newMovieList = allMovies.map(item => {
-                    if(item.nameRU === response.nameRU) {
+                    if (item.nameRU === response.nameRU) {
                         item.isSave = true;
                         item._id = response._id;
                         return item
@@ -82,9 +101,10 @@ function MoviesWrapper({ isMyMoviesPage }) {
                     return item
                 });
                 setInLocalStaroge('allMovies', newMovieList);
-                setMyMovies(newMovieList);
+                const newMyMovies = [...myMovies, response];
+                window.localStorage.setItem('myMovies', JSON.stringify(newMyMovies));
+                setMyMovies(newMyMovies);
                 handleMoviesFilter(newMovieList);
-
             })
             .catch(error => {
                 console.log(error);
@@ -94,9 +114,20 @@ function MoviesWrapper({ isMyMoviesPage }) {
     const handleDeleteMovie = (id) => {
         mainApi.deleteMovie(id)
             .then(response => {
-                if(!isMyMoviesPage) {
+                try {
+                    const myMoviesFromStor = window.localStorage.getItem('myMovies');
+                    const parsedValue = JSON.parse(myMoviesFromStor);
+                    if(Array.isArray(parsedValue) && parsedValue.length) {
+                        window.localStorage.setItem('myMovies', JSON.stringify(
+                            parsedValue.filter(item => item._id !== response._id)
+                        ))
+                    }
+                } catch {
+                    window.localStorage.setItem('myMovies', JSON.stringify([]));
+                }
+                if (!isMyMoviesPage) {
                     const newMovieList = allMovies.map(item => {
-                        if(item._id === id) {
+                        if (item._id === id) {
                             item.isSave = false;
                             return item
                         }
@@ -107,9 +138,9 @@ function MoviesWrapper({ isMyMoviesPage }) {
                     handleMoviesFilter(newMovieList);
                 } else {
                     const allMoviesInLocalStorage = getFromLocalStorage('allMovies', '', [], setAllMovies, true);
-                    if(allMoviesInLocalStorage.length) {
+                    if (allMoviesInLocalStorage.length) {
                         allMoviesInLocalStorage.map(item => {
-                            if(item._id === response._id) {
+                            if (item._id === response._id) {
                                 item.isSave = false;
                                 return item
                             }
@@ -118,9 +149,9 @@ function MoviesWrapper({ isMyMoviesPage }) {
                         window.localStorage.setItem('allMovies', JSON.stringify(allMoviesInLocalStorage))
                     };
                     const allFilteredMoviesInLocalStorage = getFromLocalStorage('filteredMovies', '', [], setFilteredMovies, true);
-                    if(allFilteredMoviesInLocalStorage.length) {
+                    if (allFilteredMoviesInLocalStorage.length) {
                         allFilteredMoviesInLocalStorage.map(item => {
-                            if(item._id === response._id) {
+                            if (item._id === response._id) {
                                 item.isSave = false;
                                 return item
                             }
@@ -150,7 +181,7 @@ function MoviesWrapper({ isMyMoviesPage }) {
             return false
         });
         setFilteredMovies(newFilteredMovies);
-        if(!isMyMoviesPage) {
+        if (!isMyMoviesPage) {
             setInLocalStaroge('filteredMovies', newFilteredMovies)
         }
         setIsLoading(false);
@@ -242,7 +273,7 @@ function MoviesWrapper({ isMyMoviesPage }) {
                                                 handleAddMovie={handleAddMovie}
                                                 handleDeleteMovie={handleDeleteMovie}
                                             />
-                                            : null}
+                                            : <p>Ничего не найдено</p>}
                                     </>
                                 }
                             </>
@@ -260,9 +291,8 @@ function MoviesWrapper({ isMyMoviesPage }) {
                                             />
                                             :
                                             <>
-                                                {allMovies && allMovies.length ? <p>Ничего не найдено</p> : <></>}
+                                                <p>Ничего не найдено</p>
                                             </>
-
                                         }
                                     </>
                                 }

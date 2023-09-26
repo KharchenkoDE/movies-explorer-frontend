@@ -3,8 +3,9 @@ import './Profile.css';
 import Header from '../Header/Header';
 import { CurrentUserContext } from "../../context/CurrentUserContext";
 import { validator } from '../../utils/validation';
+import { SUCCESS_PROFILE_UPDATE, NOT_SUCCESS_PROFILE_UPDATE, EMPTY_INPUT_ERROR } from '../../config';
 
-function Profile({ isLoggedIn, handleChangeProfile, onSignOut }) {
+function Profile({ isLoggedIn, handleChangeProfile, onSignOut, isUpdateSuccess }) {
 
   const currentUser = React.useContext(CurrentUserContext);
 
@@ -18,6 +19,8 @@ function Profile({ isLoggedIn, handleChangeProfile, onSignOut }) {
     email: "",
   });
 
+  const [updateResult, setUpdateResult] = useState('');
+
   const [isEditable, setIsEditable] = useState(false);
 
   function handleChange(evt) {
@@ -28,19 +31,23 @@ function Profile({ isLoggedIn, handleChangeProfile, onSignOut }) {
     }));
     setFormDataErrors((prevFormData) => ({
       ...prevFormData,
-      [name]: value ? validator({ type: name, value }) : 'Поле обязательно для заполнения',
+      [name]: value ? validator({ type: name, value }) : EMPTY_INPUT_ERROR,
     }));
   };
 
   function handleButtonClick(evt) {
     evt.preventDefault();
+    setUpdateResult('');
     if (isEditable) {
+      if (formData.name === currentUser.name && formData.email === currentUser.email) {
+        setIsEditable(prevState => !prevState)
+        return
+      }
       handleChangeProfile(formData);
-      setIsEditable(prevState => !prevState)
+      setIsEditable(prevState => !prevState);
     } else {
-      setIsEditable(prevState => !prevState)
+      setIsEditable(prevState => !prevState);
     }
-
   }
 
   useEffect(() => {
@@ -53,6 +60,18 @@ function Profile({ isLoggedIn, handleChangeProfile, onSignOut }) {
       )
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (isUpdateSuccess !== undefined) {
+      setUpdateResult(isUpdateSuccess
+        ? SUCCESS_PROFILE_UPDATE
+        : NOT_SUCCESS_PROFILE_UPDATE
+      );
+      setTimeout(() => {
+        setUpdateResult('');
+      }, 3000)
+    }
+  }, [isUpdateSuccess]);
 
   return (
     <>
@@ -91,12 +110,30 @@ function Profile({ isLoggedIn, handleChangeProfile, onSignOut }) {
                 required />
             </label>
             {formDataErrors.email && <p className='profile__error'>{formDataErrors.email}</p>}
+            {updateResult &&
+              <p
+                className={
+                  `profile__result ${!isUpdateSuccess ? 'profile__result_error' : ''}`
+                }
+              >
+                {updateResult}
+              </p>
+            }
             <div className='profile__action'>
               <button
-                disabled={isEditable && (formDataErrors.name || formDataErrors.email)}
+                disabled={
+                  isEditable &&
+                  (
+                    !!formDataErrors.name ||
+                    !!formDataErrors.email ||
+                    !formData.name ||
+                    !formData.email
+                  )
+                }
                 onClick={handleButtonClick}
                 className='profile__btn-edit'
-                type={'submit'}>
+                type={'submit'}
+              >
                 {isEditable ? 'Сохранить' : 'Редактировать'}
               </button>
               <button onClick={onSignOut} className='profile__btn-exit' >

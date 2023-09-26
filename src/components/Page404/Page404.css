@@ -25,6 +25,9 @@
   
   .page-error__btn {
     margin: auto 0 60px;
+    background: none;
+    border: none;
+    outline: none;
     text-align: center;
     text-decoration: none;
     color: #4285F4;

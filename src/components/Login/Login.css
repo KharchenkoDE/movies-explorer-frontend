@@ -51,6 +51,11 @@
   opacity: 0.8;
 }
 
+.login__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .login__link {
   text-decoration: none;
 }

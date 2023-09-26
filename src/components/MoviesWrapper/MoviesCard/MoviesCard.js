@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './MoviesCard.css';
 import savePic from '../../../images/save-btn (movies-card).svg';
 import savedPic from '../../../images/saved-btn (movies-card).svg';
@@ -6,17 +6,13 @@ import deletePic from '../../../images/delete-btn (movies-card).svg';
 
 function MoviesCard({ movie, handleClickSave, handleClickDelete, isMyMoviesPage }) {
 
-  const [isSaved, setIsSaved] = useState(movie.isSave)
-
   const getFormattedDuration = (duration) => {
     const hour = Math.floor(duration / 60)
     return `${hour !== 0 ? `${hour}ч ` : ''}${duration % 60}м`
   }
 
-  const handleClickButton = () => {
-    const newSavedState = !isSaved
-    setIsSaved(newSavedState)
-    if(newSavedState) {
+  const handleClickButton = (like) => {
+    if(like) {
       handleClickSave(movie);
     } else {
       handleClickDelete(movie._id);
@@ -44,9 +40,9 @@ function MoviesCard({ movie, handleClickSave, handleClickDelete, isMyMoviesPage 
       </div>
       {!isMyMoviesPage &&
         <button
-          onClick={handleClickButton}
-          className={isSaved ? 'movies-card__btn-saved' : 'movies-card__btn-save'}
-          type='button'>{isSaved ?
+          onClick={() => handleClickButton(movie.isSave ? false : true)}
+          className={movie.isSave ? 'movies-card__btn-saved' : 'movies-card__btn-save'}
+          type='button'>{movie.isSave ?
             <img className="movies-card__btn-saved-pic"
               alt='добавлено в сохраненные'
               src={savedPic} /> :

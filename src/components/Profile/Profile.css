@@ -56,6 +56,16 @@
   text-align: right;
 }
 
+.profile__result {
+  margin: 20px 0 0;
+  padding: 0;
+  text-align: center;
+  color: #2BE080;
+}
+
+.profile__result_error {
+  color: #EE3465;
+}
 
 .profile__action {
   padding-top: 220px;
@@ -80,7 +90,8 @@
 }
 
 .profile__btn-edit:disabled {
-  opacity: 0.8;
+  opacity: 0.5;
+  cursor: default;
 }
 
 .profile__btn-exit {

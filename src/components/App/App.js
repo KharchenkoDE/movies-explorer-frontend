@@ -19,9 +19,12 @@ function App() {
         name: '',
         email: '',
     });
+
     const [isLoggedIn, setIsLoggedIn] = useState(true);
 
     const [signError, setSignError] = useState('');
+
+    const [isUpdateSuccess, setIsUpdateSucess] = useState(undefined);
 
     const navigate = useNavigate();
 
@@ -31,14 +34,23 @@ function App() {
                 if (data.token) {
                     setIsLoggedIn(true);
                     localStorage.setItem("jwt", data.token);
+                    handleTokenCheck();
                     navigate('/movies', { replace: true });
                 }
             })
             .catch((err) => {
-                setSignError('Произошла ошибка');
+                if (!err.message) {
+                    return err.json();
+                } else {
+                    setSignError(err.message)
+                }
+            })
+            .then((err) => {
+                if (err && err.statusCode !== 200) {
+                    setSignError(getErrorMessage(err))
+                }
             })
     }
-
 
     function handleRegUser(regData) {
         auth.regUser(regData)
@@ -51,7 +63,16 @@ function App() {
                 }
             })
             .catch((err) => {
-                setSignError('Произошла ошибка');
+                if (!err.message) {
+                    return err.json();
+                }
+            })
+            .then((err) => {
+                if (err && err.statusCode !== 200) {
+                    setSignError(getErrorMessage(err))
+                } else {
+                    setSignError(err.message)
+                }
             })
     }
 
@@ -77,11 +98,13 @@ function App() {
     }
 
     function handleChangeProfile(userData) {
+        setIsUpdateSucess(undefined);
         auth.setUserInfo(userData)
             .then(response => {
                 setCurrentUser(response);
+                setIsUpdateSucess(true);
             })
-            .catch((err) => console.log(err))
+            .catch(() => setIsUpdateSucess(false))
     }
 
     function handleSignOut() {
@@ -90,12 +113,14 @@ function App() {
             name: '',
             email: '',
         })
+        setIsUpdateSucess(undefined);
         setIsLoggedIn(false);
         navigate('/', { replace: true });
         localStorage.removeItem('searchValue');
         localStorage.removeItem('filteredMovies');
         localStorage.removeItem('allMovies');
         localStorage.removeItem('isShort');
+        localStorage.removeItem('myMovies');
     };
 
     useEffect(() => {
@@ -134,6 +159,7 @@ function App() {
                                 isLoggedIn={isLoggedIn}
                                 handleChangeProfile={handleChangeProfile}
                                 onSignOut={handleSignOut}
+                                isUpdateSuccess={isUpdateSuccess}
                             />
                         }
                     />
@@ -146,13 +172,25 @@ function App() {
                     <Route
                         path='/signup'
                         element={
-                            <Register onRegister={handleRegUser} signError={signError} setSignError={setSignError} />
+                            <ProtectedRoute
+                                element={Register}
+                                isLoggedIn={!isLoggedIn}
+                                onRegister={handleRegUser}
+                                signError={signError}
+                                setSignError={setSignError}
+                            />
                         }
                     />
                     <Route
                         path='/signin'
                         element={
-                            <Login onLogin={handleLoginUser} signError={signError} setSignError={setSignError} />
+                            <ProtectedRoute
+                                element={Login}
+                                isLoggedIn={!isLoggedIn}
+                                onLogin={handleLoginUser}
+                                signError={signError}
+                                setSignError={setSignError}
+                            />
                         }
                     />
                 </Routes>
