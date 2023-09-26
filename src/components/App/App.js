@@ -10,7 +10,6 @@ import Register from '../Register/Register';
 import Login from '../Login/Login';
 import Page404 from '../Page404/Page404';
 import * as auth from '../../utils/MainApi';
-import { getErrorMessage } from '../../utils/getErrorMessage';
 
 import './App.css';
 
@@ -38,17 +37,8 @@ function App() {
                     navigate('/movies', { replace: true });
                 }
             })
-            .catch((err) => {
-                if (!err.message) {
-                    return err.json();
-                } else {
-                    setSignError(err.message)
-                }
-            })
-            .then((err) => {
-                if (err && err.statusCode !== 200) {
-                    setSignError(getErrorMessage(err))
-                }
+            .catch(() => {
+                setSignError('Произошла ошибка');
             })
     }
 
@@ -62,17 +52,8 @@ function App() {
                     })
                 }
             })
-            .catch((err) => {
-                if (!err.message) {
-                    return err.json();
-                }
-            })
-            .then((err) => {
-                if (err && err.statusCode !== 200) {
-                    setSignError(getErrorMessage(err))
-                } else {
-                    setSignError(err.message)
-                }
+            .catch(() => {
+                setSignError('Произошла ошибка');
             })
     }
 
