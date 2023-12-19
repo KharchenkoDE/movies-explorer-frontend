@@ -1,0 +1,25 @@
+.button__load-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    margin: 50px auto 0;
+    min-width: 320px;
+    background-color: inherit;
+    border-radius: 10px;
+    border: solid 1px #424242;
+    font-weight: 500;
+    font-size: 12px;
+    color: #FFF;
+    cursor: pointer;
+  }
+
+  .button__load-more:hover {
+    opacity: 0.8;
+  }
+
+  @media screen and (max-width: 540px) {
+    .button__load-more {
+      min-width: 240px;
+    }
+  }
